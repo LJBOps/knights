@@ -491,21 +491,43 @@
 </footer>
 
 <script>
-  // ── Fundraising progress bar ──────────────────────────────────────────
-  // To update: change RAISED to the current total amount raised (in dollars)
-  const RAISED = 0;
-  const GOAL   = 36000;
-  const pct    = GOAL > 0 ? Math.min(100, (RAISED / GOAL) * 100) : 0;
-  const fill   = document.getElementById('progress-fill');
-  const label  = document.getElementById('pct-label');
+  // ── Live fundraising progress — pulls from Knights_Fundraising_Tracker (Google Sheets) ──
+  // Source: Dashboard tab, cell B22 (Total Raised)
+  // Updates automatically whenever the spreadsheet is updated — no manual changes needed here.
 
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
+  const GOAL     = 36000;
+  const SHEET_ID = '13QNU_1t-VJ3lzRSlFgGGoBKJ905evrlPYx2dsRG1JFM';
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID
+                  + '/gviz/tq?tqx=out:csv&sheet=Dashboard&range=B22';
+
+  let raised      = 0;
+  let inView      = false;
+
+  function animateBar() {
+    const pct   = Math.min(100, (raised / GOAL) * 100);
+    const fill  = document.getElementById('progress-fill');
+    const label = document.getElementById('pct-label');
+    fill.style.width = pct + '%';
+    label.textContent = raised > 0
+      ? '$' + raised.toLocaleString() + ' raised \u00b7 ' + pct.toFixed(1) + '% of $36,000 goal'
+      : 'Fundraising launches soon!';
+  }
+
+  // Fetch live total from Google Sheet (requires sheet published to web)
+  fetch(SHEET_URL)
+    .then(function(r) { return r.text(); })
+    .then(function(csv) {
+      raised = parseFloat(csv.replace(/[^0-9.]/g, '')) || 0;
+      if (inView) animateBar();
+    })
+    .catch(function() { /* sheet not published yet — shows default message */ });
+
+  // Animate bar when section scrolls into view
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
       if (e.isIntersecting) {
-        fill.style.width = pct + '%';
-        if (RAISED > 0) {
-          label.textContent = '$' + RAISED.toLocaleString() + ' raised \u00b7 ' + pct.toFixed(0) + '% of goal';
-        }
+        inView = true;
+        animateBar();
         obs.disconnect();
       }
     });
