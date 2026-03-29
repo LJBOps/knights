@@ -492,46 +492,30 @@
 
 <script>
   // ── Live fundraising progress — pulls from Knights_Fundraising_Tracker (Google Sheets) ──
-  // Source: Dashboard tab, cell B22 (Total Raised)
+  // Source: Dashboard tab, cell B23 (Team Total Raised)
   // Updates automatically whenever the spreadsheet is updated — no manual changes needed here.
 
-  const GOAL     = 36000;
-  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2Uiifp12yjwzaGi9Gd26myaoAO26fK5IwX1ZHy9fTdPjlDeb-df5cjAR1j_pbSq6RJFG7ORN0oIc7/pub?gid=1732399399&single=true&output=csv&range=B23';
+  var GOAL = 36000;
+  var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2Uiifp12yjwzaGi9Gd26myaoAO26fK5IwX1ZHy9fTdPjlDeb-df5cjAR1j_pbSq6RJFG7ORN0oIc7/pub?gid=1732399399&single=true&output=csv&range=B23';
 
-  let raised      = 0;
-  let inView      = false;
-
-  function animateBar() {
-    const pct   = Math.min(100, (raised / GOAL) * 100);
-    const fill  = document.getElementById('progress-fill');
-    const label = document.getElementById('pct-label');
+  function setBar(raised) {
+    var pct   = Math.min(100, (raised / GOAL) * 100);
+    var fill  = document.getElementById('progress-fill');
+    var label = document.getElementById('pct-label');
     fill.style.width = pct + '%';
     label.textContent = raised > 0
       ? '$' + raised.toLocaleString() + ' raised \u00b7 ' + pct.toFixed(1) + '% of $36,000 goal'
       : 'Fundraising launches soon!';
   }
 
-  // Fetch live total from Google Sheet (requires sheet published to web)
+  // Fetch live total — updates bar as soon as data arrives, no scroll trigger needed
   fetch(SHEET_URL)
     .then(function(r) { return r.text(); })
     .then(function(csv) {
-      raised = parseFloat(csv.replace(/[^0-9.]/g, '')) || 0;
-      if (inView) animateBar();
+      var raised = parseFloat(csv.replace(/[^0-9.]/g, '')) || 0;
+      setBar(raised);
     })
-    .catch(function() { /* sheet not published yet — shows default message */ });
-
-  // Animate bar when section scrolls into view
-  var obs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        inView = true;
-        animateBar();
-        obs.disconnect();
-      }
-    });
-  }, { threshold: 0.3 });
-
-  obs.observe(document.getElementById('cooperstown'));
+    .catch(function() { setBar(0); });
 </script>
 
 </body>
