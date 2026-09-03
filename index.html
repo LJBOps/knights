@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Knights Baseball Program 12U - Valdez</title>
-  <meta name="description" content="Knights 12U Travel Baseball — Bay Area. Fundraising for Cooperstown Dreams Park 2026." />
+  <meta name="description" content="Knights 12U Travel Baseball — Bay Area. Fundraising for Cooperstown All Star Village 2027." />
   <style>
     /* ── Reset & Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -387,15 +387,15 @@
   </p>
   <div class="goal-card">
     <div class="goal-stat">
-      <strong>$3,000</strong>
+      <strong>$3,301</strong>
       <span>Goal per player</span>
     </div>
     <div class="goal-stat">
-      <strong>$36,000</strong>
+      <strong>$42,915</strong>
       <span>Team total goal</span>
     </div>
     <div class="goal-stat">
-      <strong>12</strong>
+      <strong>13</strong>
       <span>Players</span>
     </div>
     <div class="goal-stat">
@@ -512,7 +512,7 @@
   // Source: Dashboard tab, cell B23 (Team Total Raised)
   // Updates automatically whenever the spreadsheet is updated — no manual changes needed here.
 
-  var GOAL = 36000;
+  var GOAL = 42915;
   var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2Uiifp12yjwzaGi9Gd26myaoAO26fK5IwX1ZHy9fTdPjlDeb-df5cjAR1j_pbSq6RJFG7ORN0oIc7/pub?gid=1732399399&single=true&output=csv&range=B23';
 
   function setBar(raised) {
@@ -521,7 +521,7 @@
     var label = document.getElementById('pct-label');
     fill.style.width = pct + '%';
     label.textContent = raised > 0
-      ? '$' + raised.toLocaleString() + ' raised \u00b7 ' + pct.toFixed(1) + '% of $36,000 goal'
+      ? '$' + raised.toLocaleString() + ' raised \u00b7 ' + pct.toFixed(1) + '% of $42,915 goal'
       : 'Fundraising launches soon!';
   }
 
