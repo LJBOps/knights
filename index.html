@@ -387,26 +387,26 @@
   </p>
   <p>
     All funds raised go directly to covering the team&rsquo;s entry fees and tournament costs
-    &mdash; no player left behind.
+    &ndash; no player left behind.
   </p>
   <div class="goal-card">
     <div class="goal-stat">
-      <strong>$3,301</strong>
-      <span>Goal per player</span>
+      <strong id="stat-family">$2,917.31</strong>
+      <span>Goal per family</span>
     </div>
     <div class="goal-stat">
-      <strong>$42,915</strong>
+      <strong id="stat-goal">$37,925</strong>
       <span>Team total goal</span>
     </div>
     <div class="goal-stat">
-      <strong>13</strong>
+      <strong id="stat-players">13</strong>
       <span>Players</span>
     </div>
     <div class="goal-stat">
       <strong>2027</strong>
       <span>Tournament year</span>
     </div>
-  </div>
+  </div> </div>
   <div class="progress-wrap">
     <div class="progress-label">
       <span>Team fundraising progress</span>
@@ -512,31 +512,74 @@
 </footer>
 
 <script>
-  // ── Live fundraising progress — pulls from Knights_Fundraising_Tracker (Google Sheets) ──
-  // Source: Dashboard tab, cell B23 (Team Total Raised)
-  // Updates automatically whenever the spreadsheet is updated — no manual changes needed here.
+  /* Live fundraising numbers - pulled from Knights_Fundraising_Tracker (Google Sheets, Dashboard tab).
+     Cells are located by their LABEL, not their position, so the sheet can be rearranged
+     without breaking this page. Goal, per-family goal, player count and amount raised all
+     come from the sheet - nothing here needs to be edited by hand. */
 
-  var GOAL = 42915;
-  var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2Uiifp12yjwzaGi9Gd26myaoAO26fK5IwX1ZHy9fTdPjlDeb-df5cjAR1j_pbSq6RJFG7ORN0oIc7/pub?gid=1732399399&single=true&output=csv&range=B23';
+  var SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2Uiifp12yjwzaGi9Gd26myaoAO26fK5IwX1ZHy9fTdPjlDeb-df5cjAR1j_pbSq6RJFG7ORN0oIc7/pub?gid=1732399399&single=true&output=csv';
+  var FALLBACK = { goal: 37925, family: 2917.31, players: 13, raised: 0 };
 
-  function setBar(raised) {
-    var pct   = Math.min(100, (raised / GOAL) * 100);
-    var fill  = document.getElementById('progress-fill');
-    var label = document.getElementById('pct-label');
-    fill.style.width = pct + '%';
-    label.textContent = raised > 0
-      ? '$' + raised.toLocaleString() + ' raised \u00b7 ' + pct.toFixed(1) + '% of $42,915 goal'
+  function parseCSV(text) {
+    var rows = [], row = [], cell = '', q = false, i, c;
+    for (i = 0; i < text.length; i++) {
+      c = text[i];
+      if (q) {
+        if (c === '"' && text[i+1] === '"') { cell += '"'; i++; }
+        else if (c === '"') { q = false; }
+        else { cell += c; }
+      } else if (c === '"') { q = true; }
+      else if (c === ',') { row.push(cell); cell = ''; }
+      else if (c === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+      else if (c !== '\r') { cell += c; }
+    }
+    row.push(cell); rows.push(row);
+    return rows;
+  }
+
+  function num(v) { var n = parseFloat(String(v || '').replace(/[^0-9.]/g, '')); return isNaN(n) ? 0 : n; }
+
+  function cellAfter(rows, label) {
+    label = label.toLowerCase();
+    for (var r = 0; r < rows.length; r++) {
+      for (var c = 0; c < rows[r].length; c++) {
+        if (rows[r][c].trim().toLowerCase().indexOf(label) === 0) return rows[r][c+1];
+      }
+    }
+    return null;
+  }
+
+  function money(n, decimals) {
+    return '$' + n.toLocaleString('en-US', {
+      minimumFractionDigits: decimals || 0, maximumFractionDigits: decimals || 0
+    });
+  }
+
+  function render(d) {
+    var pct = d.goal > 0 ? Math.min(100, (d.raised / d.goal) * 100) : 0;
+    document.getElementById('stat-family').textContent  = money(d.family, 2);
+    document.getElementById('stat-goal').textContent    = money(d.goal);
+    document.getElementById('stat-players').textContent = d.players;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('pct-label').textContent = d.raised > 0
+      ? money(d.raised, 2) + ' raised \u00b7 ' + pct.toFixed(1) + '% of ' + money(d.goal)
       : 'Fundraising launches soon!';
   }
 
-  // Fetch live total — updates bar as soon as data arrives, no scroll trigger needed
-  fetch(SHEET_URL)
-    .then(function(r) { return r.text(); })
-    .then(function(csv) {
-      var raised = parseFloat(csv.replace(/[^0-9.]/g, '')) || 0;
-      setBar(raised);
+  render(FALLBACK);
+
+  fetch(SHEET_CSV)
+    .then(function (r) { return r.text(); })
+    .then(function (csv) {
+      var rows = parseCSV(csv);
+      render({
+        goal:    num(cellAfter(rows, 'team goal'))          || FALLBACK.goal,
+        family:  num(cellAfter(rows, 'goal per family'))    || FALLBACK.family,
+        players: num(cellAfter(rows, 'families committed')) || FALLBACK.players,
+        raised:  num(cellAfter(rows, 'team total'))         || 0
+      });
     })
-    .catch(function() { setBar(0); });
+    .catch(function () { /* keep the fallback numbers already on screen */ });
 </script>
 
 </body>
