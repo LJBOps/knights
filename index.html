@@ -58,9 +58,12 @@
       border-bottom: 4px solid var(--teal);
     }
     #hero img {
-      width: 140px;
-      height: 140px;
+      width: 168px;
+      height: 168px;
       object-fit: contain;
+      /* white fill + padding so the round crop never clips the logo artwork */
+      background: #fff;
+      padding: 16px;
       border-radius: 50%;
       border: 3px solid var(--teal);
       box-shadow: 0 0 30px rgba(37,150,190,0.45);
