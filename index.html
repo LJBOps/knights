@@ -227,6 +227,33 @@
       margin-bottom: 0.5rem;
     }
     .support-card p { font-size: 0.9rem; margin: 0; color: #333; }
+    /* Pie fundraiser - spans the full row so the flyer and details sit side by side */
+    .pie-card {
+      grid-column: 1 / -1;
+      border-top-color: var(--red);
+    }
+    .pie-body {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-top: 0.25rem;
+    }
+    .pie-body img {
+      width: 190px;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #cde7f2;
+      flex-shrink: 0;
+    }
+    .pie-details { flex: 1 1 280px; }
+    .pie-details p { margin-bottom: 0.6rem; }
+    .pie-details p:last-child { margin-bottom: 0; }
+    .pie-flavors { color: #444; }
+    @media (max-width: 560px) {
+      .pie-body img { width: 100%; }
+    }
+
     .event-date {
       display: inline-block;
       background: var(--red);
@@ -428,6 +455,33 @@
     <p>Every dollar helps a Knight get to Cooperstown. Here&rsquo;s how you can help:</p>
 
     <div class="support-grid">
+
+      <div class="support-card pie-card">
+        <span class="event-date">Orders due Oct 24</span>
+        <h3>&#x1F967; Thanksgiving Pie Fundraiser</h3>
+        <div class="pie-body">
+          <a href="knights_pie_flyer.jpg" target="_blank" rel="noopener">
+            <img src="knights_pie_flyer.jpg" alt="Knights 12U Thanksgiving pie fundraiser flyer - full details" />
+          </a>
+          <div class="pie-details">
+            <p>
+              <strong>$25 each.</strong> 10" handmade pies, serves 6-8, stays frozen up to a year.
+              Hand delivered on or after <strong>November 6th</strong> by a real Knight!
+            </p>
+            <p class="pie-flavors">
+              <strong>Flavors:</strong> Apple, Dutch Apple, Apricot, Mixed Berry, Strawberry Rhubarb,
+              Peach Cobbler, Boysenberry, Caramel Apple, Pumpkin.
+              <a href="https://www.thepieco.com" target="_blank" rel="noopener" style="color:var(--teal-dk);">More about the pies</a>
+            </p>
+            <p>
+              <strong>To order:</strong> contact your favorite Knights family, or email
+              <a href="mailto:Knights12uValdez@gmail.com" style="color:var(--teal-dk);font-weight:700;">Knights12uValdez@gmail.com</a>.
+              <a href="knights_pie_flyer.jpg" target="_blank" rel="noopener" style="color:var(--teal-dk);">See the full flyer</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
 
       <div class="support-card" style="border-top-color:#6D1ED4;">
         <h3>&#x1F4B0; Cash Donation</h3>
